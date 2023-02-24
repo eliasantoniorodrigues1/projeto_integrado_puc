@@ -1,0 +1,8 @@
+venv/
+.mypy_cache/
+.env
+env
+credentials/
+old_data/
+__pycache__/
+
