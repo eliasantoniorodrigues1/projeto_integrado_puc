@@ -10,10 +10,12 @@ os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = os.path.join(
 
 
 def create_bigquery_table(df, dataset_tablename, gcp_project_name, insert_mode='append'):
-    # df: your pandas dataframe
-    # dataset_tablename (str.str): dataset_name.tablename
-    # gcp_project_name: GCP Project ID
-
+    '''
+        essa funcao cria uma tabela dentro do google bigquery
+         params: df: your pandas dataframe
+         params: dataset_tablename (str.str): dataset_name.tablename
+         params: gcp_project_name: GCP Project ID
+    '''
     df.to_gbq(
         destination_table=dataset_tablename,
         project_id=gcp_project_name,
@@ -25,15 +27,32 @@ def create_bigquery_table(df, dataset_tablename, gcp_project_name, insert_mode='
 
 
 def remove_accents(text: str):
+    '''
+        funcao para remover acento das palavras
+        params: text: texto contendo acentos a serem removidos
+        return: texto tratado
+    '''
     normalizado = unicodedata.normalize('NFKD', text)
     return ''.join([c for c in normalizado if not unicodedata.combining(c)])
 
 
 def remove_non_digit(text: str):
+    '''
+        remove todos os caracteres que nao sao numericos de um texto
+        ex: 000.111.666-77 ira retornar 00011166677
+        params: text: texto a ser removido caracteres nao numericos
+        return: texto tratado
+    '''
     return re.sub(r'\D', '', text)
 
 
 def remove_non_letter(text: str):
+    '''
+        remove todos os caracteres que nao sao letras e numeros de um texto
+        ex: Cotacao-Diaria ira retornar Cotacao_Diaria
+        params: text: texto a ser removido caracteres nao numericos
+        return: texto tratado
+    '''    
     new_text = ''
     t = len(text)-1
 
@@ -48,8 +67,11 @@ def remove_non_letter(text: str):
 
 def adjust_df_columns(columns: list):
     '''
-        this function clear columns chars to
-        allow insert into bigquery
+        essa funcao limpa as colunas contendo 
+        caracteres nao permitidos no bigquery
+        params: columns: lista contendo todos os cabecalhos de um
+        dataframe
+        return: lista tratada
     '''
     treated_columns = []
     for name in columns:
@@ -58,7 +80,3 @@ def adjust_df_columns(columns: list):
         treated_columns.append(name)
 
     return treated_columns
-
-
-if __name__ == '__name__':
-    create_dataset('dados_fundamentalistas', 'us-central1-a')

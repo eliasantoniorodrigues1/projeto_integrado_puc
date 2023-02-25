@@ -1,5 +1,5 @@
 import pandas as pd
-from _settings import HTML_DIR
+from _settings import HTML_DIR, project_name, dataset
 from _utils import create_bigquery_table, adjust_df_columns
 import os
 
@@ -14,8 +14,8 @@ def get_data_from_html(file_name: str):
 
 
 if __name__ == '__main__':
-    project_name = 'consultor-investimentos'
-    dataset = 'raw_data'
+    project_name = project_name
+    dataset = dataset
     table_name = 't_companies'
     file_name = 'fundamentus_all_companies.html'
 
