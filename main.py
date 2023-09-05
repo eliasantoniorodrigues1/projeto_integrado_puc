@@ -8,7 +8,7 @@ import os
 
 
 if __name__ == '__main__':
-    df = pd.read_csv(os.path.join(DATA_DIR, 'indice_ibovf_b3.csv'))
+    df = pd.read_csv(os.path.join(DATA_DIR, 'indice_ibov_b3.csv'))
     tickers_ibov = df['cod'].values.tolist()
     # lista para consolitar todas as coletas
     consolidated = []

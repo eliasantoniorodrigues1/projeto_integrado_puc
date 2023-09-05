@@ -1,13 +1,13 @@
-### Projeto Integrado PUC Minas - Consultor de Investimentos
+# Projeto Integrado PUC Minas - Consultor de Investimentos
 
 
 ---
 
 *Preciso adicionar atualização automática do índice Bovespa - IBOV*
 
-(link)[https://www.b3.com.br/pt_br/market-data-e-indices/indices/indices-amplos/indice-ibovespa-ibovespa-composicao-da-carteira.htm]
+(link) [https://www.b3.com.br/pt_br/market-data-e-indices/indices/indices-amplos/indice-ibovespa-ibovespa-composicao-da-carteira.htm]
 
-#### Introdução
+### Introdução
 
 1.1. Contexto
 
