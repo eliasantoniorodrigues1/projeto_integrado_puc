@@ -30,3 +30,10 @@ ibov = ['ABEV3', 'AZUL4', 'B3SA3', 'BBAS3', 'BBDC3', 'BBDC4', 'BBSE3',
         'PETR3', 'PETR4', 'PRIO3', 'QUAL3', 'RADL3', 'RAIL3', 'RENT3',
         'SANB11', 'SBSP3', 'SULA11', 'SUZB3', 'TAEE11', 'TIMS3', 'TOTS3',
         'UGPA3', 'USIM5', 'VALE3', 'VIVT4', 'VVAR3', 'WEGE3', 'YDUQ3']
+
+# =========================================================================
+host = 'localhost'
+port = 3306
+user = 'root'
+pws = 'Matrix*1987'
+database = 'projeto_integrado_puc'

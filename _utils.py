@@ -1,5 +1,7 @@
 from sqlalchemy import create_engine
-from _settings import CREDENTIALS_DIR
+import pymysql
+import pandas as pd
+from _settings import CREDENTIALS_DIR, user, pws, host, port, database
 import unicodedata
 import re
 import os
@@ -52,7 +54,7 @@ def remove_non_letter(text: str):
         ex: Cotacao-Diaria ira retornar Cotacao_Diaria
         params: text: texto a ser removido caracteres nao numericos
         return: texto tratado
-    '''    
+    '''
     new_text = ''
     t = len(text)-1
 
@@ -80,3 +82,23 @@ def adjust_df_columns(columns: list):
         treated_columns.append(name)
 
     return treated_columns
+
+
+def insert_mysql(data: pd.DataFrame, tbl_name: str):
+    conn_string = f'mysql+pymysql://{user}:{pws}@{host}:{port}/{database}'
+    sql_engine = create_engine(conn_string, echo=True)
+    
+    # df = pd.DataFrame(data=dataset)
+
+    conn = sql_engine.connect()
+    try:
+        frame = data.to_sql(tbl_name, conn, if_exists='fail')
+        print(frame)
+    except ValueError as ve:
+        print(ve)
+    except Exception as e:
+        print(e)        
+    else:
+        print(f'Table {tbl_name} created successfully.')
+    finally:
+        conn.close()
