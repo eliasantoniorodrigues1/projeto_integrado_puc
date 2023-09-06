@@ -1,6 +1,7 @@
 import requests
 import pandas as pd
 from _settings import ibov, DATA_DIR
+from _utils import insert_mysql
 import os
 
 
@@ -26,6 +27,8 @@ def get_ibov_b3():
         return ibov
 
 
-if __name__ == '__main__':
-    df = get_ibov_b3()
-    
+def insert_empresas_ibov(table_name):
+    df = pd.read_csv(os.path.join(DATA_DIR, 'indice_ibov_b3.csv'))
+    insert_mysql(data=df, tbl_name=table_name)
+
+    return 'Empresas do índice atualizadas com sucesso!'

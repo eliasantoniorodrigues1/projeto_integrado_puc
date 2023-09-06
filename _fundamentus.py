@@ -22,7 +22,7 @@ def get_fundamentus_data(base_url: str, url: str, file_name: str):
     print(f'Dados coletado com sucesso e salvos em {file_name}')
 
 
-if __name__ == '__main__':
+def executa_coleta_fundamentus():
     base_url = 'www.fundamentus.com.br'
     url_fundamentos = '/resultado.php'
     url_list_companies = '/detalhes.php?papel='

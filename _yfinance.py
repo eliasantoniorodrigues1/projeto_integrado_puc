@@ -1,8 +1,10 @@
 import yfinance as yf
 from datetime import datetime, timedelta
-from _settings import ibov, project_name, dataset
-from _utils import create_bigquery_table, adjust_df_columns
+from _settings import DATA_DIR
+from _utils import adjust_df_columns, insert_mysql
 from time import sleep
+import os
+import pandas as pd
 
 
 def collect_historical_cotation(ticker: str):
@@ -31,24 +33,43 @@ def collect_historical_cotation(ticker: str):
     return data
 
 
-if __name__ == '__main__':
+def atualiza_historico_cotacao():
+    df = pd.read_csv(os.path.join(DATA_DIR, 'indice_ibov_b3.csv'))
+    tickers_ibov = df['cod'].values.tolist()
+    # lista para consolitar todas as coletas
+    consolidated = []
+
     # percorre a lista de empresas listadas no ibov e coleta as
     # cotacoes dos ultimos tres anos e insere no bigquery
-    for ticker in ibov[:-1]:
+    for ticker in tickers_ibov:
         data = collect_historical_cotation(ticker=f'{ticker}.SA')
 
-        # essa funcao coloca o cabecalho em caixa baixa e remove todos
-        # os caracteres especiais para possibilitar a insercao no
-        # bigquery
-        columns = adjust_df_columns(columns=data.columns.tolist())
-        data.columns = columns
+        # cria a tabela no mysql e faz a insercao dos dados
+        tbl_name = 't_historico_cotacoes_ibov'
 
-        # cria a tabela no gcp e faz a insercao dos dados
-        table_name = 't_historico_cotacoes_ibov'
-        create_bigquery_table(
-            df=data, dataset_tablename=f'{dataset}.{table_name}',
-            gcp_project_name=project_name, insert_mode='append'
-        )
+        # consolida dados coletados
+        consolidated.append(data)
 
         # aguarda um segundo para fazer a proxima requisicao
         sleep(1)
+
+    # salva um backup
+    df_consolidated = pd.concat(consolidated)
+    df_consolidated.to_csv(
+        f'{os.path.join(DATA_DIR, tbl_name)}.csv', index=False)
+
+    # essa funcao coloca o cabecalho em caixa baixa e remove todos
+    # os caracteres especiais para possibilitar a insercao no
+    # bigquery
+    columns = adjust_df_columns(columns=df_consolidated.columns.tolist())
+    df_consolidated.columns = columns
+
+    # drop index
+    df_consolidated.drop(0)
+    print(df_consolidated.head())
+
+    # executa insert no banco de dados
+    insert_mysql(data=df_consolidated, tbl_name=tbl_name)
+
+    print('Histórico de contações atualizado com sucesso!')
+    

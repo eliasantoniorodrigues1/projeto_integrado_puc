@@ -1,46 +1,28 @@
+from _settings import DATA_DIR
+from _yfinance import atualiza_historico_cotacao
 from _utils import insert_mysql
-from _utils import adjust_df_columns
-from _settings import ibov, DATA_DIR
-from _yfinance import collect_historical_cotation
-from time import sleep
-import pandas as pd
-import os
-
+from _fundamentus import executa_coleta_fundamentus
+from _transform_data import data_processing
+from _ibov import insert_empresas_ibov
 
 if __name__ == '__main__':
-    df = pd.read_csv(os.path.join(DATA_DIR, 'indice_ibov_b3.csv'))
-    tickers_ibov = df['cod'].values.tolist()
-    # lista para consolitar todas as coletas
-    consolidated = []
+    # opcional: atualiza as empresas no indice do ibov
+    # get_ibov_b3()
 
-    # percorre a lista de empresas listadas no ibov e coleta as
-    # cotacoes dos ultimos tres anos e insere no bigquery
-    for ticker in tickers_ibov:
-        data = collect_historical_cotation(ticker=f'{ticker}.SA')
+    # cria a tabela do ibov e insere os valores
+    insert_empresas_ibov(table_name='t_indice_ibov_b3')
 
-        # cria a tabela no mysql e faz a insercao dos dados
-        tbl_name = 't_historico_cotacoes_ibov'
+    # 1 - atualiza o historico de cotacoes das empresas do ibov
+    # atualiza_historico_cotacao()
 
-        # consolida dados coletados
-        consolidated.append(data)
+    # 2 - coleta os dados fundamentalistas do site fundamentus
+    # executa_coleta_fundamentus()
 
-        # aguarda um segundo para fazer a proxima requisicao
-        sleep(1)
-
-    # salva um backup
-    df_consolidated = pd.concat(consolidated)
-    df_consolidated.to_csv(
-        f'{os.path.join(DATA_DIR, tbl_name)}.csv', index=False)
-
-    # essa funcao coloca o cabecalho em caixa baixa e remove todos
-    # os caracteres especiais para possibilitar a insercao no
-    # bigquery
-    columns = adjust_df_columns(columns=df_consolidated.columns.tolist())
-    df_consolidated.columns = columns
-
-    # drop index
-    df_consolidated.drop(0)
-    print(df_consolidated.head())
-
-    # executa insert no banco de dados
-    insert_mysql(data=df_consolidated, tbl_name=tbl_name)
+    # 3 - obtem as tabelas do html do site fundamentos e cria as tabelas
+    # no banco de dados
+    data_processing(file_name='fundamentus.html',
+                    table_name='t_fundamentus')
+    data_processing(file_name='fundamentus_all_companies.html',
+                    table_name='t_fundamentus_all_companies')
+    data_processing(file_name='fundamentus_company.html',
+                    table_name='t_fundamentus_company')

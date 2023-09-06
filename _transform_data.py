@@ -1,6 +1,6 @@
 import pandas as pd
 from _settings import HTML_DIR, project_name, dataset
-from _utils import create_bigquery_table, adjust_df_columns
+from _utils import insert_mysql, adjust_df_columns
 import os
 
 
@@ -13,11 +13,11 @@ def get_data_from_html(file_name: str):
     return tables[0]
 
 
-if __name__ == '__main__':
-    project_name = project_name
-    dataset = dataset
-    table_name = 't_companies'
-    file_name = 'fundamentus_all_companies.html'
+def data_processing(file_name, table_name):
+    # project_name = project_name
+    # dataset = dataset
+    # table_name = 't_companies'
+    # file_name = 'fundamentus_all_companies.html'
 
     # cria a tabela no gcp e faz o insert dos dados
     df = get_data_from_html(file_name=file_name)
@@ -26,6 +26,7 @@ if __name__ == '__main__':
     df.columns = adjust_df_columns(header)
     print(df.head())
 
-    create_bigquery_table(df=df, dataset_tablename=f'{dataset}.{table_name}',
-                          gcp_project_name=project_name,
-                          insert_mode='replace')
+    # create_bigquery_table(df=df, dataset_tablename=f'{dataset}.{table_name}',
+    #                      gcp_project_name=project_name,
+    #                      insert_mode='replace')
+    insert_mysql(data=df, tbl_name=table_name)
