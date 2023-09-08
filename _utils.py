@@ -1,4 +1,5 @@
 from sqlalchemy import create_engine
+from sqlalchemy.sql import text
 import pymysql
 import pandas as pd
 from _settings import CREDENTIALS_DIR, user, pws, host, port, database
@@ -84,21 +85,29 @@ def adjust_df_columns(columns: list):
     return treated_columns
 
 
-def insert_mysql(data: pd.DataFrame, tbl_name: str):
+def create_conn_string():
     conn_string = f'mysql+pymysql://{user}:{pws}@{host}:{port}/{database}'
-    sql_engine = create_engine(conn_string, echo=True)
-    
+    return conn_string
+
+
+def insert_mysql(data: pd.DataFrame, tbl_name: str, if_exists_action: str):
+    sql_engine = create_engine(create_conn_string(), echo=True)
+
     # df = pd.DataFrame(data=dataset)
 
     conn = sql_engine.connect()
-    try:
-        frame = data.to_sql(tbl_name, conn, if_exists='fail')
-        print(frame)
-    except ValueError as ve:
-        print(ve)
-    except Exception as e:
-        print(e)        
-    else:
-        print(f'Table {tbl_name} created successfully.')
-    finally:
-        conn.close()
+    data.to_sql(tbl_name, conn, schema='projeto_integrado_puc',
+                if_exists=if_exists_action, index=False)
+
+
+def execute_query(query) -> pd.DataFrame:
+    sql_engine = create_engine(create_conn_string(), echo=True)
+
+    with sql_engine.connect() as con:
+        rs = con.execute(query)
+        # converte o gerador em lista e cria um dataset
+        # print(pd.DataFrame(list(rs)))
+        df = pd.DataFrame(data=list(rs))
+        # print(df.head())
+
+    return df
