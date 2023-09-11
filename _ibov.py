@@ -29,6 +29,7 @@ def get_ibov_b3():
 
 def insert_empresas_ibov(table_name):
     df = pd.read_csv(os.path.join(DATA_DIR, 'indice_ibov_b3.csv'))
-    insert_mysql(data=df, tbl_name=table_name)
+    print(df.head())
+    insert_mysql(data=df, tbl_name=table_name, if_exists_action='append')
 
     return 'Empresas do índice atualizadas com sucesso!'

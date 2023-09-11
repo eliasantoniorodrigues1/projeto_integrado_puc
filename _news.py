@@ -47,28 +47,12 @@ def get_news(table_name: str):
 
                     search.append(news)
 
-            '''
-            statement = text("""
-                INSERT INTO projeto_integrado_puc.t_news_ibov(
-                      ticker
-                    , creation_date
-                    , url
-                    , source
-                    , news) 
-                    VALUES(:ticker, :creation_date, :url, :source, :news);
-                    """)
-            execute_query(statement, search)
-            '''
             print(f'Total of {len(search)} news founded!')
             # printer.pprint(search)
             df = pd.DataFrame(search)
-            # df = df.reset_index(drop=True)
-            # print(df.head())
-            # create_bigquery_table(df=df, dataset_tablename=f'{project_name}.{dataset}.t_news',
-            #                     gcp_project_name=project_name)
-
             # save csv file
             df.to_csv(os.path.join(DATA_DIR, f'{table_name}.csv'), index=False)
+            
             # insert mysql
             insert_mysql(data=df, tbl_name='t_news_ibov', if_exists_action='append')
 

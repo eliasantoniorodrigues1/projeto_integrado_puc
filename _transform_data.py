@@ -29,4 +29,4 @@ def data_processing(file_name, table_name):
     # create_bigquery_table(df=df, dataset_tablename=f'{dataset}.{table_name}',
     #                      gcp_project_name=project_name,
     #                      insert_mode='replace')
-    insert_mysql(data=df, tbl_name=table_name)
+    insert_mysql(data=df, tbl_name=table_name, if_exists_action='append')

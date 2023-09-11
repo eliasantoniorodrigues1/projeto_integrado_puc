@@ -7,14 +7,14 @@ import os
 import pandas as pd
 
 
-def collect_historical_cotation(ticker: str):
+def collect_historical_cotation(ticker: str, period=1095):
     '''
         essa funcao coleta as cotacoes do yfinance dos ultimos tres
         anos
         params: ticker: codigo do papel negociado na bolsa de valores
     '''
     # configurando o espaco de tempo para coleta dos dados na API do yfinance
-    delta = timedelta(days=1095)  # pega os ultimos tres anos
+    delta = timedelta(days=period)  # pega os ultimos tres anos
     yesterday = datetime.today() - timedelta(days=1)  # coleta dados em d-1
     end = yesterday.strftime("%Y-%m-%d")
     start = (yesterday - delta).strftime("%Y-%m-%d")
@@ -64,12 +64,10 @@ def atualiza_historico_cotacao():
     columns = adjust_df_columns(columns=df_consolidated.columns.tolist())
     df_consolidated.columns = columns
 
-    # drop index
-    df_consolidated.drop(0)
     print(df_consolidated.head())
 
     # executa insert no banco de dados
-    insert_mysql(data=df_consolidated, tbl_name=tbl_name)
+    insert_mysql(data=df_consolidated, tbl_name=tbl_name, if_exists_action='append')
 
     print('Histórico de contações atualizado com sucesso!')
     

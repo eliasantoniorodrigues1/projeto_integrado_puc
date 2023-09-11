@@ -29,27 +29,27 @@ def create_bigquery_table(df, dataset_tablename, gcp_project_name, insert_mode='
     print(f'Total de linhas inseridas {len(df)}.')
 
 
-def remove_accents(text: str):
+def remove_accents(string: str):
     '''
         funcao para remover acento das palavras
         params: text: texto contendo acentos a serem removidos
         return: texto tratado
     '''
-    normalizado = unicodedata.normalize('NFKD', text)
+    normalizado = unicodedata.normalize('NFKD', string)
     return ''.join([c for c in normalizado if not unicodedata.combining(c)])
 
 
-def remove_non_digit(text: str):
+def remove_non_digit(string: str):
     '''
         remove todos os caracteres que nao sao numericos de um texto
         ex: 000.111.666-77 ira retornar 00011166677
         params: text: texto a ser removido caracteres nao numericos
         return: texto tratado
     '''
-    return re.sub(r'\D', '', text)
+    return re.sub(r'\D', '', string)
 
 
-def remove_non_letter(text: str):
+def remove_non_letter(string: str):
     '''
         remove todos os caracteres que nao sao letras e numeros de um texto
         ex: Cotacao-Diaria ira retornar Cotacao_Diaria
@@ -57,9 +57,9 @@ def remove_non_letter(text: str):
         return: texto tratado
     '''
     new_text = ''
-    t = len(text)-1
+    t = len(string)-1
 
-    for i, char in enumerate(text):
+    for i, char in enumerate(string):
         if i == t and re.match(r'\W', char):
             new_text += re.sub(r'\W', '', char)
         else:
@@ -91,13 +91,16 @@ def create_conn_string():
 
 
 def insert_mysql(data: pd.DataFrame, tbl_name: str, if_exists_action: str):
-    sql_engine = create_engine(create_conn_string(), echo=True)
+    sql_engine = create_engine(create_conn_string())# , echo=True)
 
     # df = pd.DataFrame(data=dataset)
 
-    conn = sql_engine.connect()
-    data.to_sql(tbl_name, conn, schema='projeto_integrado_puc',
+    con = sql_engine.connect()
+    data.to_sql(tbl_name, con, schema='projeto_integrado_puc',
                 if_exists=if_exists_action, index=False)
+    
+    print(f'Total de linhas afetadas: {len(data)}')
+    con.close()
 
 
 def execute_query(query) -> pd.DataFrame:

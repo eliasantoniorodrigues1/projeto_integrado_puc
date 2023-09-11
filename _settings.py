@@ -35,5 +35,6 @@ ibov = ['ABEV3', 'AZUL4', 'B3SA3', 'BBAS3', 'BBDC3', 'BBDC4', 'BBSE3',
 host = 'localhost'
 port = 3306
 user = 'root'
-pws = 'Matrix*1987'
+pws = 'root*123'
 database = 'projeto_integrado_puc'
+engine = {'mysql': False, 'sqlite3': True}
